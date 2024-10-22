@@ -1,3 +1,5 @@
+export const rapidApiKey = process.env.EXPO_PUBLIC_RAPIDAPIKEY!
+
 export const categories = [
   'All',
   'Gaming',

@@ -9,15 +9,34 @@ import {
 import Feather from "@expo/vector-icons/Feather";
 
 import { themeColors } from "../theme/colors";
-import { categories, shortVideos, videos } from "../constants";
-import { useState } from "react";
+import { categories, shortVideos } from "../constants";
+import { useEffect, useState } from "react";
 import { ShortVideoCard } from "../components/short-video-card";
 import { VideoCard } from "../components/video-card";
+import { fetchTrendingVideos } from "../services/youtube";
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("All");
+  const [videos, setVideos] = useState([])
+  const [shortVideos, setShorts] = useState([])
 
-  return (
+  async function fetchData(){
+    const data = await fetchTrendingVideos()
+
+    const trendingVideos = data.filter((video: any) => video.type === "video")
+    const trendingShorts = data.filter((video: any) => video.type === "shorts_listing")
+
+    setVideos(trendingVideos)
+    setShorts(trendingShorts[0].data)
+  }
+
+  useEffect(() => {
+    fetchData()
+  }, [])
+
+  console.log(1)
+
+  return videos.length > 0 ? (
     <View style={{ backgroundColor: themeColors.bg }} className="flex-1 pt-4">
       <StatusBar barStyle="light-content" />
 
@@ -110,6 +129,10 @@ export default function Home() {
           ))}
         </ScrollView>
       </ScrollView>
+    </View>
+  ) : (
+    <View className="flex-1 items-center justify-center">
+      <Text className="text-white">Loading</Text>
     </View>
   );
 }
